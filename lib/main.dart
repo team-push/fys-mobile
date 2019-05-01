@@ -1,7 +1,9 @@
 import 'package:finish_your_story/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() async {
+
   Widget _defaultHome = new LoginPage();
 
   bool checkLogin = false;
@@ -20,6 +22,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -63,8 +66,43 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  Future init() async {
+    Future onSelectNotification(String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: ' + payload);
+      }
+    }
+    Future onDidRecieveLocationLocation(int id, String title, String body, String payload) async {
+      if (payload != null) {
+        print('payload: ' + payload);
+      }
+    }
+
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings(
+        onDidReceiveLocalNotification: onDidRecieveLocationLocation);
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+
+
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        0, 'Do it now', 'Complete your story 1011 now!!', platformChannelSpecifics,
+        payload: 'item id 2');
+}
+
   void _incrementCounter() {
     setState(() {
+      init();
     });
   }
 
@@ -80,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("GO FYSH"),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
