@@ -1,6 +1,10 @@
 import 'package:finish_your_story/join.dart';
+import 'package:finish_your_story/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -8,7 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
-
+  final passwordController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -17,6 +21,15 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     usernameController.dispose();
+  }
+
+  _login() {
+
+    String username = usernameController.text;
+    String password = passwordController.text;
+    AuthService().login(username, password).then((Response response) {
+      Navigator.pushReplacementNamed(context, '/home');
+    });
   }
 
   @override
@@ -31,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         child: ListView(
           children: <Widget>[
             TextFormField(
+              controller: usernameController,
               decoration: new InputDecoration(
                   hintText: 'Username',
                   labelText: 'Username',
@@ -38,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextFormField(
               obscureText: true,
+              controller: passwordController,
               decoration: new InputDecoration(
                   hintText: 'Password',
                   labelText: 'Password'
@@ -64,9 +79,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             RaisedButton(
               child: const Text('Login'),
-              onPressed: () => {
-                print("login...")
-              },
+              onPressed: _login,
             )
           ],
         )

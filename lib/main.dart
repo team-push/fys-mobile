@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:finish_your_story/login.dart';
+import 'package:finish_your_story/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart';
 
 void main() async {
 
@@ -11,6 +15,8 @@ void main() async {
     _defaultHome = MyHomePage();
   }
 
+  final int alarmId = 0;
+  await AndroidAlarmManager.initialize();
   runApp(new MaterialApp(
     title: 'GO FYSH',
     home: _defaultHome,
@@ -19,6 +25,11 @@ void main() async {
       '/login': (BuildContext context) => new LoginPage()
     },
   ));
+  await AndroidAlarmManager.periodic(const Duration(seconds: 5), alarmId, checkMessage);
+}
+
+void checkMessage() {
+  print("hello checking now..");
 }
 
 class MyApp extends StatelessWidget {
@@ -99,6 +110,23 @@ class _MyHomePageState extends State<MyHomePage> {
         0, 'Do it now', 'Complete your story 1011 now!!', platformChannelSpecifics,
         payload: 'item id 2');
 }
+String _username = "";
+
+  void _push() {
+    setState(() {
+      _username = userSearchController.text;
+      if(_username == "") {
+        return showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text("please input username"),
+              );
+            }
+        );
+      }
+    });
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -106,54 +134,90 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  int _selectedMessage;
+
+  final userSearchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    void _selected1(int value) {
+      setState(() {
+        _selectedMessage = value;
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text("GO FYSH"),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+      body: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+          ),
+          TextFormField(
+            controller: userSearchController,
+            decoration: new InputDecoration(
+              hintText: 'Username',
+              labelText: 'Username',
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(0.0),
+                child: Icon(
+                  Icons.search,
+                  color: Colors.grey,
+                ), // icon is 48px widget.
+              ),
+            )
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+          ),
+          Center(
+            child: InkWell(
+                onTap: _push,
+                child: Container(
+                    padding: const EdgeInsets.all(50.0),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.red
+                    ),
+                    child: Text("PUSH", style: TextStyle(color: Colors.white, fontSize: 50.0))
+                )
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.arrow_right),
+          ),
+          ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: 0,
+                    groupValue: _selectedMessage,
+                    onChanged: _selected1,
+                  ),
+                  new Text(
+                    'Finish Your Story Now!!',
+                    style: new TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: 1,
+                    groupValue: _selectedMessage,
+                    onChanged: _selected1,
+                  ),
+                  new Text(
+                    'Move your story',
+                    style: new TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              )
+            ],
+          )
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
