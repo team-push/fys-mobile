@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:finish_your_story/login.dart';
-import 'package:finish_your_story/service/user_service.dart';
+import 'package:finish_your_story/service/message_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 
 void main() async {
@@ -29,6 +27,9 @@ void main() async {
 }
 
 void checkMessage() {
+  MessageService().getMessages().then((Response response) {
+
+  });
   print("hello checking now..");
 }
 
@@ -77,40 +78,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  Future init() async {
-    Future onSelectNotification(String payload) async {
-      if (payload != null) {
-        debugPrint('notification payload: ' + payload);
-      }
-    }
-    Future onDidRecieveLocationLocation(int id, String title, String body, String payload) async {
-      if (payload != null) {
-        print('payload: ' + payload);
-      }
-    }
-
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid =
-    new AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings(
-        onDidReceiveLocalNotification: onDidRecieveLocationLocation);
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
-
-
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'Do it now', 'Complete your story 1011 now!!', platformChannelSpecifics,
-        payload: 'item id 2');
-}
-String _username = "";
+  String _username = "";
 
   void _push() {
     setState(() {
@@ -125,12 +93,6 @@ String _username = "";
             }
         );
       }
-    });
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      init();
     });
   }
 

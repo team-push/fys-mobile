@@ -1,4 +1,4 @@
-package io.flutter.plugins.finishyourstory;
+package com.fys.finish_your_story;
 
 import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.PluginRegistry;
