@@ -29,7 +29,7 @@ class Login {
 class AuthService {
   Future<http.Response> register(String username, String password, String fullName) {
     var reg = Registration(username: username, password: password, fullName: fullName);
-    return http.post('http://10.0.2.2:8100/api/auth/register', headers: {
+    return http.post('http://3.91.208.51/api/auth/register', headers: {
       'Content-Type': 'application/json'
     }, body: json.encode(reg.toJson())).then((http.Response response) {
       print(response.statusCode);
@@ -37,7 +37,7 @@ class AuthService {
   }
   Future<http.Response> login(String username, String password) {
     var login = Login(username: username, password: password);
-    return http.post('http://10.0.2.2:8100/api/auth/login', headers: {
+    return http.post('http://3.91.208.51/api/auth/login', headers: {
       'Content-Type': 'application/json'
     }, body: json.encode(login.toJson())).then((http.Response response) {
       Map<String, dynamic> map = jsonDecode(response.body);
