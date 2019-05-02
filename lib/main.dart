@@ -23,7 +23,8 @@ void main() async {
       '/login': (BuildContext context) => new LoginPage()
     },
   ));
-  await AndroidAlarmManager.periodic(const Duration(seconds: 5), alarmId, checkMessage);
+  await AndroidAlarmManager.periodic(const Duration(seconds: 5), alarmId, checkMessage,
+    wakeup: true, exact: true);
 }
 
 void checkMessage() {
@@ -92,17 +93,20 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             }
         );
+      } else {
+        print("sending to " + _username + ", message=" + _selectedMessage);
+        MessageService().send(_username, _selectedMessage);
       }
     });
   }
 
-  int _selectedMessage;
+  String _selectedMessage;
 
   final userSearchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    void _selected1(int value) {
+    void _selected1(String value) {
       setState(() {
         _selectedMessage = value;
       });
@@ -142,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(50.0),
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.red
+                        color: Colors.black54
                     ),
                     child: Text("PUSH", style: TextStyle(color: Colors.white, fontSize: 50.0))
                 )
@@ -154,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 children: <Widget>[
                   Radio(
-                    value: 0,
+                    value: 'Finish your stories.',
                     groupValue: _selectedMessage,
                     onChanged: _selected1,
                   ),
@@ -167,12 +171,51 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 children: <Widget>[
                   Radio(
-                    value: 1,
+                    value: 'Zero out your hours',
                     groupValue: _selectedMessage,
                     onChanged: _selected1,
                   ),
                   new Text(
-                    'Move your story',
+                    'Zero out your hours',
+                    style: new TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: 'Change your due date.',
+                    groupValue: _selectedMessage,
+                    onChanged: _selected1,
+                  ),
+                  new Text(
+                    'Change your due date.',
+                    style: new TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: 'This story is too old.',
+                    groupValue: _selectedMessage,
+                    onChanged: _selected1,
+                  ),
+                  new Text(
+                    'This story is too old',
+                    style: new TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Radio(
+                    value: "I'm working from home",
+                    groupValue: _selectedMessage,
+                    onChanged: _selected1,
+                  ),
+                  new Text(
+                    "I'm working from home",
                     style: new TextStyle(fontSize: 16.0),
                   ),
                 ],

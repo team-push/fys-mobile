@@ -27,10 +27,21 @@ class PushMessage {
 }
 
 class MessageService {
+  Future<http.Response> send(String to, String message) async {
+    final storage = new FlutterSecureStorage();
+    String accessKey = await storage.read(key: 'accessKey');
+    Map<String, dynamic> map = new Map();
+    map['message'] = message;
+    return http.post('http://10.0.2.2:8100/api/message/to/' + to, headers: {
+      'Authorization': 'Bearer ' + accessKey
+    }, body: map).then((http.Response response){
+      print(response.statusCode);
+      print(response.body);
+    });
+  }
   Future<http.Response> getMessages() async {
     final storage = new FlutterSecureStorage();
     String accessKey = await storage.read(key: 'accessKey');
-    print(accessKey);
     return http.get('http://10.0.2.2:8100/api/message', headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + accessKey
